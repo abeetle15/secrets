@@ -1,0 +1,21 @@
+.sub-header {
+  font-size: 2rem;
+}
+
+.enter-link:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#rotating-gif:hover {
+  cursor: help;
+  transition: 300ms;
+}
+
+#rotating-gif:active {
+  transform: scale(1.5);
+}
+
+a {
+  all: unset;
+}

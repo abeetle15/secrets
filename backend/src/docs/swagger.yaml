@@ -1,0 +1,8 @@
+openapi: 3.0.0
+info:
+  title: Secretos API
+  version: 1.0.0
+  description: API documentation for secretos.com
+servers:
+  - url: http://localhost:3000
+paths:
