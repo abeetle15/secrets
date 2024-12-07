@@ -1,12 +1,5 @@
 # Steps to Complete the Secretos.com Backend
 
-## **4. Implement Authentication**
-
-2. **Authentication Middleware**
-   - Build middleware to verify JWT tokens and protect routes.
-
----
-
 ## **5. Develop Core Features**
 
 1. **Secrets**

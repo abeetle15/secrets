@@ -14,7 +14,6 @@ const secretSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-// index to optimize queries
 secretSchema.index({ author: 1, createdAt: -1 });
 
 export default mongoose.model("Secret", secretSchema);
