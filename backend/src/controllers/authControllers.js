@@ -54,7 +54,12 @@ export async function login(req, res) {
     }
 
     const token = jwt.sign(
-      { id: user._id, username: user.username, role: user.role },
+      {
+        id: user._id,
+        username: user.username,
+        isAnon: user.isAnon,
+        role: user.role,
+      },
       config.jwtSecret,
       { expiresIn: "7d" }
     );
@@ -65,6 +70,7 @@ export async function login(req, res) {
       user: {
         id: user._id,
         username: user.username,
+        isAnon: user.isAnon,
         role: user.role,
       },
     });
