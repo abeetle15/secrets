@@ -4,7 +4,6 @@
 
 1. **Secrets**
 
-   - Implement endpoints to create, retrieve, update, and delete secrets.
    - Add a like/unlike feature for secrets.
 
 2. **Users**

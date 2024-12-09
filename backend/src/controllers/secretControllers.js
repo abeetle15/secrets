@@ -1,4 +1,5 @@
 import { Secret } from "../models/index.js";
+import { findSecretById } from "../utils/secretUtils.js";
 
 export async function postSecret(req, res) {
   try {
@@ -73,4 +74,31 @@ export async function getAllSecrets(req, res) {
   }
 }
 
-export async function deleteSecret(req, res) {}
+export async function deleteSecret(req, res) {
+  try {
+    const id = req.params.id;
+    const secret = await findSecretById(id);
+
+    if (!secret) {
+      return res.status(400).json({ message: "No secret found with this id" });
+    }
+
+    if (req.user.id !== secret.author.toString() && req.user.role === "user") {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this secret" });
+    }
+
+    const response = await Secret.deleteOne({ _id: id });
+
+    res.status(200).json({
+      message: "Secret successfully deleted",
+      db_response: response,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "An error has ocurred deleting this secret",
+      error: error.message,
+    });
+  }
+}
