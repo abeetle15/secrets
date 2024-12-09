@@ -48,7 +48,7 @@ export async function getAllSecrets(req, res) {
 
     const allSecrets = await Secret.find(
       query,
-      "content author likes comments createdAt isAnon"
+      "content author likesCount createdAt isAnon"
     )
       .populate("author", "username")
       .sort({ [sortBy]: sortOrder })
