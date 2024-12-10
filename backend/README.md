@@ -1,12 +1,5 @@
 # Steps to Complete the Secretos.com Backend
 
-## **9. Integrate Swagger Documentation**
-
-- Define detailed Swagger documentation for all API endpoints.
-- Include descriptions, request/response examples, and error codes.
-
----
-
 ## **10. Write Tests**
 
 - Write unit tests for controllers, services, and routes.

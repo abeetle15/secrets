@@ -2,10 +2,9 @@ import express from "express";
 import routes from "./routes/index.js";
 import errorMiddleware from "./middlewares/errorHandling.js";
 import { limiter, speedLimiter } from "./middlewares/limiter.js";
-import swaggerSetup from "./config/swaggerSetup.js";
 import swaggerUi from "swagger-ui-express";
-import { readFileSync } from "fs";
-import { parse } from "yaml";
+import fs from "fs";
+import yaml from "yaml";
 import cors from "cors";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
@@ -23,9 +22,8 @@ app.use(xssClean());
 app.use(limiter);
 app.use(speedLimiter);
 // docs
-swaggerSetup(app);
-const swaggerDoc = parse(
-  readFileSync(
+const swaggerDoc = yaml.parse(
+  fs.readFileSync(
     "/Users/UnCucarron/Documents/my-projects/secrets/backend/src/docs/swagger.yaml",
     "utf8"
   )

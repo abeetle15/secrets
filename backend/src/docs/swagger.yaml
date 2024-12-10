@@ -2,7 +2,642 @@ openapi: 3.0.0
 info:
   title: Secretos API
   version: 1.0.0
-  description: API documentation for secretos.com
+  description: API documentation for Secretos, a mini social media platform.
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:3000/api
 paths:
+  /auth/signup:
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: user123
+                password:
+                  type: string
+                  example: mysecurepassword
+      responses:
+        "201":
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User successfully created
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 675896d083fca82537bbf798
+                      username:
+                        type: string
+                        example: user123
+  /auth/login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: user123
+                password:
+                  type: string
+                  example: mysecurepassword
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successful login
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ...
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 675896d083fca82537bbf798
+                      username:
+                        type: string
+                        example: user123
+                      isAnon:
+                        type: boolean
+                        example: false
+                      role:
+                        type: string
+                        example: user
+  /secrets:
+    get:
+      summary: Get all secrets
+      description: Retrieve all secrets
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: author
+          in: query
+          schema:
+            type: string
+        - name: isAnon
+          in: query
+          schema:
+            type: boolean
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            example: createdAt
+        - name: order
+          in: query
+          schema:
+            type: string
+            example: desc
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 50
+        - name: page
+          in: query
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Secrets fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Secrets fetched successfully
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Secret"
+    post:
+      summary: Post a secret
+      description: Create a new secret
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: this is an example secret
+      responses:
+        "201":
+          description: Secret posted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Secret posted successfully
+                  secret:
+                    $ref: "#/components/schemas/Secret"
+  /secrets/{id}:
+    delete:
+      summary: Delete a secret
+      description: Only the author can delete their own secret
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Secret successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Secret successfully deleted
+                  db_response:
+                    type: object
+                    properties:
+                      acknowledged:
+                        type: boolean
+                        example: true
+                      deletedCount:
+                        type: integer
+                        example: 1
+  /comments/{secretId}:
+    get:
+      summary: Get all comments for a secret
+      description: Retrieve all comments for a specific secret
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: secretId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Comments successfully fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Comments successfully fetched
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Comment"
+    post:
+      summary: Post a comment to a secret
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: secretId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: example comment content
+      responses:
+        "201":
+          description: Comment posted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Comment posted successfully
+                  secret:
+                    type: object
+                    properties:
+                      secret:
+                        type: string
+                        example: 675879daef549bdd509fb9a0
+                      author:
+                        type: string
+                        example: 675750cadeea05462e6a0488
+                      content:
+                        type: string
+                        example: example comment content
+                      _id:
+                        type: string
+                        example: 6758cbada6082c6de5381023
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: 2024-12-10T23:15:57.430Z
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: 2024-12-10T23:15:57.430Z
+                      __v:
+                        type: integer
+                        example: 0
+  /comments/{commentId}:
+    delete:
+      summary: Delete a comment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Comment removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Comment removed successfully
+                  db_response:
+                    type: object
+                    properties:
+                      acknowledged:
+                        type: boolean
+                        example: true
+                      deletedCount:
+                        type: integer
+                        example: 1
+  /likes/{secretId}:
+    post:
+      summary: Create a like
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: secretId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Like created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Like created successfully
+                  like_id:
+                    type: string
+                    example: 6758ccf9a6082c6de5381034
+    delete:
+      summary: Delete a like
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: secretId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Like removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Like removed successfully
+                  db_response:
+                    type: object
+                    properties:
+                      acknowledged:
+                        type: boolean
+                        example: true
+                      deletedCount:
+                        type: integer
+                        example: 1
+  /user/{userId}:
+    get:
+      summary: Get user details
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User details fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User fetched successfully
+                  data:
+                    type: object
+                    $ref: "#/components/schemas/User"
+    patch:
+      summary: Update user information
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                profile:
+                  type: object
+                  properties:
+                    bio:
+                      type: string
+                    avatar:
+                      type: string
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User updated successfully
+                  updated_user:
+                    type: object
+                    $ref: "#/components/schemas/User"
+  /user/secrets/{userId}:
+    get:
+      summary: Get user's secrets
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User secrets fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Secrets for this user fetched successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Secret"
+  /user/likes/{userId}:
+    get:
+      summary: Get user's likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User likes fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Likes successfully fetched
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Like"
+  /user/{userToFollowId}/follow:
+    put:
+      summary: Follow a user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userToFollowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User followed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You successfully followed the other user
+  /user/{userToUnfollowId}/unfollow:
+    put:
+      summary: Unfollow a user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userToUnfollowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User unfollowed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You successfully unfollowed the other user
+  /user/change-password:
+    put:
+      summary: Change user's password
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        "200":
+          description: Password updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password was updated successfully
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        isAnon:
+          type: boolean
+        role:
+          type: string
+        profile:
+          type: object
+          properties:
+            bio:
+              type: string
+            avatar:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Secret:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        author:
+          $ref: "#/components/schemas/User"
+        isAnon:
+          type: boolean
+        likesCount:
+          type: integer
+        commentsCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        secret:
+          type: string
+        author:
+          $ref: "#/components/schemas/User"
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Like:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        secret:
+          type: string
+        createdAt:
+          type: string
+          format: date-time

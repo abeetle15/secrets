@@ -76,7 +76,7 @@ export async function removeLike(req, res) {
 
     res
       .status(201)
-      .json({ message: "Like removed successfully", response: db_response });
+      .json({ message: "Like removed successfully", db_response: db_response });
   } catch (error) {
     res.status(500).json({
       message: "An error has ocurred removing your like",

@@ -94,7 +94,7 @@ export async function removeComment(req, res) {
 
     res.status(200).json({
       message: "Comment removed successfully",
-      response: db_response,
+      db_response: db_response,
     });
   } catch (error) {
     res.status(500).json({
