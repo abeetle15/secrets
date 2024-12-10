@@ -111,28 +111,28 @@ export async function updateUserInfo(req, res) {
 }
 
 export async function followOtherUser(req, res) {
-  const userToUnfollowId = req.params.userToUnfollowId;
+  const userToFollowId = req.params.userToFollowId;
   const currentUserId = req.user.id;
 
   try {
-    const currentUser = await User.findOne({ _id: currentUserId });
-    const userToUnfollow = await User.findOne({ _id: userToUnfollowId });
+    const currentUser = await User.findById(currentUserId);
+    const userToFollow = await User.findById(userToFollowId);
 
-    if (!currentUser || !userToUnfollow) {
+    if (!currentUser || !userToFollow) {
       return res.status(404).json({ message: "User not found" });
     }
-    if (currentUserId === userToUnfollow) {
+    if (currentUserId === userToFollow) {
       return res.status(400).json({ message: "You can't follow yourself" });
     }
-    if (currentUser.following.includes(userToUnfollowId)) {
+    if (currentUser.following.includes(userToFollowId)) {
       return res.status(400).json({ message: "You already follow this user" });
     }
 
-    currentUser.following.push(userToUnfollowId);
-    userToUnfollow.followers.push(currentUserId);
+    currentUser.following.push(userToFollowId);
+    userToFollow.followers.push(currentUserId);
 
     await currentUser.save();
-    await userToUnfollow.save();
+    await userToFollow.save();
 
     res
       .status(200)
