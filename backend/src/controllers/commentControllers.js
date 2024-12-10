@@ -52,7 +52,7 @@ export async function getCommentsForPost(req, res) {
       "author content createdAt"
     )
       .populate("author", "username")
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip)
       .lean();

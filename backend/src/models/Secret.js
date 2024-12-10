@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 const secretSchema = mongoose.Schema(
   {
     content: { type: String, required: true },
-    likesCount: { type: Number, default: 0 },
-    commentsCount: { type: Number, default: 0 },
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     isAnon: { type: Boolean },
+    likesCount: { type: Number, default: 0 },
+    commentsCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

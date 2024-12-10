@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { User, Secret } from "../models/index.js";
+import { User, Secret, Like } from "../models/index.js";
 import { userExists } from "../utils/userUtils.js";
 
 export async function getUserInfo(req, res) {
@@ -108,6 +108,123 @@ export async function updateUserInfo(req, res) {
     });
   }
 }
-// Follow/Unfollow
-// Get User’s Activity (Likes etc.)
+
+export async function followOtherUser(req, res) {
+  const userToUnfollowId = req.params.userToUnfollowId;
+  const currentUserId = req.user.id;
+
+  try {
+    const currentUser = await User.findOne({ _id: currentUserId });
+    const userToUnfollow = await User.findOne({ _id: userToUnfollowId });
+
+    if (!currentUser || !userToUnfollow) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (currentUserId === userToUnfollow) {
+      return res.status(400).json({ message: "You can't follow yourself" });
+    }
+    if (currentUser.following.includes(userToUnfollowId)) {
+      return res.status(400).json({ message: "You already follow this user" });
+    }
+
+    currentUser.following.push(userToUnfollowId);
+    userToUnfollow.followers.push(currentUserId);
+
+    await currentUser.save();
+    await userToUnfollow.save();
+
+    res
+      .status(200)
+      .json({ message: "You successfully followed the other user" });
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while trying to follow the user",
+      error: error.message,
+    });
+  }
+}
+export async function unfollowOtherUser(req, res) {
+  const userToUnfollowId = req.params.userToUnfollowId;
+  const currentUserId = req.user.id;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(userToUnfollowId)) {
+      return res.status(400).json({ message: "Invalid user ID format" });
+    }
+    if (currentUserId === userToUnfollowId) {
+      return res.status(400).json({ message: "You can't unfollow yourself" });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+    const userToUnfollow = await User.findById(userToUnfollowId);
+
+    if (!currentUser || !userToUnfollow) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!currentUser.following.includes(userToUnfollowId)) {
+      return res.status(400).json({ message: "You don't follow this user" });
+    }
+
+    currentUser.following = currentUser.following.filter(
+      (id) => id.toString() !== userToUnfollowId
+    );
+    userToUnfollow.followers = userToUnfollow.followers.filter(
+      (id) => id.toString() !== currentUserId
+    );
+
+    await currentUser.save();
+    await userToUnfollow.save();
+
+    res
+      .status(200)
+      .json({ message: "You successfully unfollowed the other user" });
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while trying to unfollow the user",
+      error: error.message,
+    });
+  }
+}
+
+export async function getUserLikes(req, res) {
+  const userId = req.params.userId;
+  const limit = Math.min(Number(req.query.limit) || 50, 100);
+  const page = Math.max(Number(req.query.page) || 1, 1);
+  const skip = (page - 1) * limit;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID format" });
+    }
+
+    const user = await User.findOne({ _id: userId }).select("_id");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userLikes = await Like.find({ user: userId }, "secret")
+      .populate("secret", "content author likesCount commentsCount createdAt")
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
+      .lean();
+
+    if (!userLikes.length) {
+      return res.status(404).json({ message: "No likes found for this user" });
+    }
+
+    res.status(200).json({
+      message: "Likes successfully fetched",
+      data: userLikes,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "An error occurred while fetching this user's likes",
+      error: error.message,
+    });
+  }
+}
 // Password Management
+export async function changePassword(req, res) {}
