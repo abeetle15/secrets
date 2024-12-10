@@ -1,26 +1,5 @@
 # Steps to Complete the Secretos.com Backend
 
-## **6. Add Middleware**
-
-- **Rate Limiting Middleware:** Use middleware to prevent abuse of API endpoints.
-
----
-
-## **7. Add Pagination and Filtering**
-
-- Implement pagination for list endpoints (e.g., retrieving secrets).
-- Add query parameters for filtering and sorting results.
-
----
-
-## **8. Enhance Security**
-
-- Sanitize inputs to prevent injection attacks.
-- Use `helmet` to secure HTTP headers.
-- Implement CORS policies to restrict access from unauthorized origins.
-
----
-
 ## **9. Integrate Swagger Documentation**
 
 - Define detailed Swagger documentation for all API endpoints.

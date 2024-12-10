@@ -7,11 +7,11 @@ import cors from "cors";
 import helmet from "helmet";
 import swaggerSetup from "./config/swaggerSetup.js";
 import mongoSanitize from "express-mongo-sanitize";
-import xss from "xss-clean";
+import xss from "xss";
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
