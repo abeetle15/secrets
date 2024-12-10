@@ -6,6 +6,7 @@ import {
   followOtherUser,
   unfollowOtherUser,
   getUserLikes,
+  changePassword,
 } from "../controllers/userControllers.js";
 import { validateJwt } from "../middlewares/jwtMiddleware.js";
 
@@ -17,5 +18,6 @@ router.patch("/:userId", validateJwt, updateUserInfo);
 router.put("/:userToFollowId/follow", validateJwt, followOtherUser);
 router.put("/:userToUnfollowId/unfollow", validateJwt, unfollowOtherUser);
 router.get("/likes/:userId", validateJwt, getUserLikes);
+router.put("/change-password", validateJwt, changePassword);
 
 export default router;

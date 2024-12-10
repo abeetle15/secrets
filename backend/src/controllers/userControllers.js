@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { User, Secret, Like } from "../models/index.js";
 import { userExists } from "../utils/userUtils.js";
+import bcrypt from "bcrypt";
 
 export async function getUserInfo(req, res) {
   const userId = req.params.userId;
@@ -226,5 +227,33 @@ export async function getUserLikes(req, res) {
     });
   }
 }
-// Password Management
-export async function changePassword(req, res) {}
+
+export async function changePassword(req, res) {
+  const { oldPassword, newPassword } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const pwdsMatch = await bcrypt.compare(oldPassword, user.password);
+
+    if (!pwdsMatch) {
+      return res.status(400).json({ message: "Passwords don't match" });
+    }
+
+    const hashedPwd = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPwd;
+    await user.save();
+
+    res.status(200).json({ message: "Password was updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error updating password", error: error.message });
+  }
+}
