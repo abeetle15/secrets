@@ -1,16 +1,7 @@
 # Steps to Complete the Secretos.com Backend
 
-## **5. Develop Core Features**
-
-2. **Users**
-   - Implement endpoints to manage user profiles.
-   - Add functionality to retrieve user-specific data.
-
----
-
 ## **6. Add Middleware**
 
-- **Error Handling Middleware:** Centralize error handling across the app.
 - **Rate Limiting Middleware:** Use middleware to prevent abuse of API endpoints.
 
 ---
