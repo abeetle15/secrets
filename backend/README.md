@@ -2,10 +2,6 @@
 
 ## **5. Develop Core Features**
 
-1. **Secrets**
-
-   - Add a like/unlike feature for secrets.
-
 2. **Users**
    - Implement endpoints to manage user profiles.
    - Add functionality to retrieve user-specific data.

@@ -24,7 +24,10 @@ export async function postSecret(req, res) {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "An error has ocurred posting your secret", error });
+      .json({
+        message: "An error has ocurred posting your secret",
+        error: error.message,
+      });
   }
 }
 
